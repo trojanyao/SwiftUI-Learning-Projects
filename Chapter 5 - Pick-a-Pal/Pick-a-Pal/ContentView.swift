@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var names: [String] = []
+    @State private var savedList: [String] = []
     @State private var nameToAdd = ""
     @State private var pickedName = ""
     @State private var shouldRemovePickedName = false
@@ -40,7 +41,10 @@ struct ContentView: View {
                 .autocorrectionDisabled()
                 .onSubmit {
                     if !nameToAdd.isEmpty {
-                        names.append(nameToAdd)
+                        if names.contains(nameToAdd) {
+                            return
+                        }
+                        names.append(nameToAdd.trimmingCharacters(in: .whitespaces))
                         nameToAdd = ""
                     }
                 }
@@ -66,6 +70,16 @@ struct ContentView: View {
             }
             .buttonStyle(.borderedProminent)
             .font(.title2)
+            
+            HStack {
+                Button("Save List") {
+                    savedList = names
+                }
+                
+                Button("Load List") {
+                    names = savedList
+                }
+            }
         }
         .padding()
     }
