@@ -16,38 +16,33 @@ struct ContentView: View {
 
     
     var body: some View {
-        VStack(alignment: .leading) {
-            Text("Score Keeper")
-                .font(.title)
-                .bold()
-                .padding(.bottom)
-            
-            Grid {
-                GridRow {
-                    Text("Player")
-                        .gridColumnAlignment(.leading)
-                    Text("Score")
-                }
-                .font(.headline)
-                
+        NavigationView {
+            List {
                 ForEach($players) { $player in
-                    GridRow {
+                    HStack {
                         TextField("Name", text: $player.name)
                         Text("\(player.score)")
                         Stepper("\(player.score)", value: $player.score)
                             .labelsHidden()
                     }
                 }
+                .onMove(perform: move)
             }
-            .padding(.vertical)
+            .navigationTitle("Players")
+            .toolbar {
+                EditButton()
+            }
+        
             
             Button("Add Player", systemImage: "plus") {
                 players.append(Player(name: "", score: 0))
             }
             
-            Spacer()
         }
-        .padding()
+    }
+    
+    func move(from source: IndexSet, to destination: Int) {
+        players.move(fromOffsets: source, toOffset: destination)
     }
 }
 
