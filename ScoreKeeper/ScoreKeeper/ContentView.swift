@@ -22,7 +22,12 @@ struct ContentView: View {
                     HStack {
                         TextField("Name", text: $player.name)
                         Text("\(player.score)")
-                        Stepper("\(player.score)", value: $player.score)
+                        Stepper("ABC\(player.score)", value: $player.score, in: 0...10)
+//                        Stepper("\(player.score)", onIncrement: {
+//                            if player.score < 20 { player.score += 1 }
+//                        }, onDecrement: {
+//                            if player.score > 0 { player.score -= 1 }
+//                        })
                             .labelsHidden()
                     }
                 }
