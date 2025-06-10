@@ -8,46 +8,69 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var players: [Player] = [
-        Player(name: "Alice", score: 0),
-        Player(name: "Bob", score: 0),
-        Player(name: "Charlie", score: 0)
-    ]
-
+    @State private var scoreboard = Scoreboard()
+    @State private var staringPoints = 0
     
     var body: some View {
-        NavigationView {
+        VStack {
+            SettingsView(doesHighestScoreWin: $scoreboard.doesHighestScoreWin, startingPoints: $staringPoints)
+                .disabled(scoreboard.state != .setup)
+            
             List {
-                ForEach($players) { $player in
+                ForEach($scoreboard.players) { $player in
                     HStack {
-                        TextField("Name", text: $player.name)
+                        HStack {
+                            if scoreboard.winners.contains(player) {
+                                Image(systemName: "crown.fill")
+                                    .foregroundStyle(.yellow)
+                            }
+                            
+                            TextField("Name", text: $player.name)
+                                .disabled(scoreboard.state != .setup)
+                        }
                         Text("\(player.score)")
                         Stepper("ABC\(player.score)", value: $player.score, in: 0...10)
-//                        Stepper("\(player.score)", onIncrement: {
-//                            if player.score < 20 { player.score += 1 }
-//                        }, onDecrement: {
-//                            if player.score > 0 { player.score -= 1 }
-//                        })
                             .labelsHidden()
                     }
                 }
                 .onMove(perform: move)
             }
-            .navigationTitle("Players")
+            .navigationTitle("Score Keeper")
             .toolbar {
                 EditButton()
             }
-        
-            
-            Button("Add Player", systemImage: "plus") {
-                players.append(Player(name: "", score: 0))
-            }
-            
         }
+        
+        Button("Add Player", systemImage: "plus") {
+            scoreboard.players.append(Player(name: "", score: 0))
+        }
+        .opacity(scoreboard.state == .setup ? 1.0 : 0)
+        
+        HStack {
+            switch scoreboard.state {
+            case .setup:
+                Button("Start Game", systemImage: "play.fill") {
+                    scoreboard.state = .playing
+                    scoreboard.resetScores(to: staringPoints)
+                }
+            case .playing:
+                Button("End Game", systemImage: "stop.fill") {
+                    scoreboard.state = .gameOver
+                }
+            case .gameOver:
+                Button("Reset Game", systemImage: "arrow.counterclockwise") {
+                    scoreboard.state = .setup
+                }
+            }
+        }
+        .buttonStyle(.bordered)
+        .buttonBorderShape(.capsule)
+        .controlSize(.large)
+        .tint(.blue)
     }
     
     func move(from source: IndexSet, to destination: Int) {
-        players.move(fromOffsets: source, toOffset: destination)
+        scoreboard.players.move(fromOffsets: source, toOffset: destination)
     }
 }
 
