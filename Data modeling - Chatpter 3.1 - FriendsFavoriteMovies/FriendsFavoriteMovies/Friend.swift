@@ -11,6 +11,7 @@ import SwiftData
 @Model
 class Friend {
     var name: String
+    var favoriteMovie: Movie?  // creates a (many-to-one) relationship between the Friend model and the Movie model
     
     init(name: String) {
         self.name = name

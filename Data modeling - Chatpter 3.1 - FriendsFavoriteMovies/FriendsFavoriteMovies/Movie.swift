@@ -12,6 +12,7 @@ import SwiftData
 class Movie {
     var title: String
     var releaseDate: Date
+    var favoriatedBy = [Friend]() // create a property for the inverse relationship (one-to-many) back to Friend
     
     init(title: String, releaseDate: Date) {
         self.title = title
